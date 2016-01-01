@@ -40,9 +40,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Antipattern.cs" />
+    <Compile Include="AnySingleCharacter.cs" />
+    <Compile Include="Backtrack.cs" />
+    <Compile Include="Choice.cs" />
     <Compile Include="Helpers.cs" />
+    <Compile Include="Literal.cs" />
+    <Compile Include="ParsingResult.cs" />
     <Compile Include="Pattern.cs" />
+    <Compile Include="Position.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Range.cs" />
+    <Compile Include="Repetition.cs" />
+    <Compile Include="Sequence.cs" />
+    <Compile Include="Set.cs" />
+    <Compile Include="SingleCharacter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

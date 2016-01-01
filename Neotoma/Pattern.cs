@@ -1,198 +1,130 @@
-﻿using System;
+﻿using System.Linq;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Diagnostics.Contracts;
+using System;
 
 namespace Neotoma
 {
+    using Memo = Dictionary<Tuple<Pattern, Position>, ParsingResult>;
+    using IMemo = IDictionary<Tuple<Pattern, Position>, ParsingResult>;
+
     public abstract class Pattern
     {
-        internal Pattern()
+        public bool Memoized
         {
-
+            get;
         }
 
-        public static Sequence operator +(
-            Pattern lhs,
-            Pattern rhs)
-        => new Sequence(lhs, rhs);
-
-        public static Choice operator /(
-            Pattern lhs,
-            Pattern rhs)
-        => new Choice(lhs, rhs);
-
-        public static Antipattern operator !(
-            Pattern rhs)
-        => new Antipattern(rhs);
-
-        public static Sequence operator -(
-            Pattern lhs,
-            Pattern rhs)
-        => !rhs + lhs;
-
-        public static Repetition operator ~(
-            Pattern rhs)
-        => new Repetition(rhs, 0, 1);
-
-        public static Repetition operator *(
-            Pattern lhs,
-            int rhs)
-        => new Repetition(lhs, 1, rhs);
-
-        public static Sequence operator &(
-            Pattern lhs, 
-            Pattern rhs)
-        => lhs + new Backtrack(rhs);
-    }
-
-    public class Literal : Pattern
-    {
-        public string Value { get; }
-
-        public Literal(string value)
+        public string Name
         {
-            Contract.Requires(!string.IsNullOrEmpty(value));
-
-            Value = value;
+            get;
         }
-    }
 
-    public class Set : Pattern
-    {
-        public IReadOnlyList<char> Values { get; }
-
-        public Set(params char[] values)
+        internal Pattern(bool memoized, string name)
         {
-            Contract.Requires(values != null);
-            Contract.Requires(values.Length > 0);
-
-            Values = values;
+            Memoized = memoized;
+            Name = name;
         }
-    }
 
-    public class Range : Pattern
-    {
-        public char Low { get; }
-        public char High { get; }
-
-        public Range(char low, char high)
+        public Pattern Memoize(string name = null)
         {
-            Contract.Requires(low <= high);
-
-            Low = low;
-            High = high;
-        }
-    }
-
-    public class Sequence : Pattern
-    {
-        public IReadOnlyList<Pattern> Patterns { get; }
-
-        public Sequence(Pattern first, Pattern second)
-        {
-            Contract.Requires(first != null);
-            Contract.Requires(second != null);
-
-            var firstseq = first as Sequence;
-            var secondseq = second as Sequence;
-
-            var count =
-                firstseq?.Patterns.Count ?? 1 +
-                secondseq?.Patterns.Count ?? 1;
-
-            var patterns = new List<Pattern>(count);
-
-            if (firstseq != null) {
-                patterns.AddRange(firstseq.Patterns);
-            } else {
-                patterns.Add(first);
+            if (Memoized && Name == name) {
+                return this;
             }
 
-            if (secondseq != null) {
-                patterns.AddRange(secondseq.Patterns);
-            } else {
-                patterns.Add(second);
+            return InternalMemoize(name);
+        }
+
+        protected abstract Pattern InternalMemoize(string name);
+
+        public ParsingResult Match(string input)
+        {
+            return Match(
+                new Position(input),
+                new Memo());
+        }
+
+        internal ParsingResult Match(
+            Position position,
+            IMemo memo)
+        {
+            ParsingResult result;
+
+            if (memo.TryGetValue(Tuple.Create(this, position), out result)) {
+                return result;
             }
 
-            Patterns = patterns;
+            return InternalMatch(position, memo);
         }
-    }
 
-    public class Choice : Pattern
-    {
-        public IReadOnlyList<Pattern> Patterns { get; }
+        protected abstract ParsingResult InternalMatch(
+            Position position,
+            IDictionary<Tuple<Pattern, Position>, ParsingResult> memo);
 
-        public Choice(Pattern first, Pattern second)
+        public virtual string ToNestedString() => $"({ToString()})";
+
+        public static Pattern operator +(Pattern lhs, Pattern rhs)
         {
-            Contract.Requires(first != null);
-            Contract.Requires(second != null);
+            if (lhs.Memoized || rhs.Memoized)
+                return new Sequence(lhs, rhs);
 
-            var firstchoice = first as Choice;
-            var secondchoice = second as Choice;
-
-            var count =
-                firstchoice?.Patterns.Count ?? 1 +
-                secondchoice?.Patterns.Count ?? 1;
-
-            var patterns = new List<Pattern>(count);
-
-            if (firstchoice != null) {
-                patterns.AddRange(firstchoice.Patterns);
-            } else {
-                patterns.Add(first);
+            var llit = lhs as Literal;
+            var rrit = rhs as Literal;
+            if (llit != null && rrit != null)
+            {
+                return new Literal(llit.Value + rrit.Value);
             }
 
-            if (secondchoice != null) {
-                patterns.AddRange(secondchoice.Patterns);
-            } else {
-                patterns.Add(second);
+            return new Sequence(lhs, rhs);
+        }
+
+        public static Pattern operator /(Pattern lhs, Pattern rhs)
+        {
+            if (lhs.Memoized || rhs.Memoized)
+                return new Sequence(lhs, rhs);
+
+            var lset = lhs as Set;
+            var rset = rhs as Set;
+            if (lset != null && rset != null)
+            {
+                return new Set(lset.Values.Concat(rset.Values).ToArray());
             }
 
-            Patterns = patterns;
+            return new Choice(lhs, rhs);
         }
+
+        public static Antipattern operator !(Pattern rhs) => new Antipattern(rhs);
+        public static Pattern operator -(Pattern lhs, Pattern rhs) => !rhs + lhs;
+        public static Repetition operator ~(Pattern rhs) => new Repetition(rhs, 0, 1);
+        public static Repetition operator *(Pattern lhs, int rhs) => new Repetition(lhs, 1, rhs);
+        public static Pattern operator &(Pattern lhs, Pattern rhs) => lhs + new Backtrack(rhs);
     }
 
-    public class Repetition : Pattern
+    public abstract class SimplePattern : Pattern
     {
-        public Pattern Pattern { get; }
-        public int Minimum { get; }
-        public int Maximum { get; }
+        internal SimplePattern(
+            bool memoized,
+            string name) 
+            : base(memoized, name)
+        { }
 
-        public Repetition(
-            Pattern pattern,
-            int minimum,
-            int maximum)
+        protected override sealed ParsingResult InternalMatch(
+            Position position,
+            IMemo memo)
         {
-            Contract.Requires(pattern != null);
-            Contract.Requires(minimum >= 0);
-            Contract.Requires(maximum >= minimum);
-
-            Pattern = pattern;
-            Minimum = minimum;
-            Maximum = maximum;
+            if (position.EOF) {
+                return new ParsingError(
+                    "EOF reached",
+                    position,
+                    this);
+            } else {
+                return InternalInternalMatch(position, memo);
+            }
         }
-    }
 
-    public class Antipattern : Pattern
-    {
-        public Pattern Pattern { get; }
+        protected abstract ParsingResult InternalInternalMatch(
+            Position position, 
+            IMemo memo);
 
-        public Antipattern(Pattern pattern)
-        {
-            Pattern = pattern;
-        }
-    }
-
-    public class Backtrack : Pattern
-    {
-        public Pattern Pattern { get; }
-
-        public Backtrack(Pattern pattern)
-        {
-            Pattern = pattern;
-        }
+        public override string ToNestedString() => ToString();
     }
 }

@@ -17,31 +17,48 @@ namespace Neotoma
 
         public Position(string str)
         {
-            Contract.Requires(str != null);
+            Contract.Requires<ArgumentNullException>(str != null);
 
             String = str;
             Index = 0;
             Line = 1;
             Column = 1;
-            EOF = Index == 0;
+            EOF = String.Length == 0;
         }
 
-        public Position Advance(int step = 1)
+        private Position(
+            string str, 
+            int index, 
+            int line, 
+            int column)
         {
-            Contract.Requires(step > 0);
+            String = str;
+            Index = index;
+            Line = line;
+            Column = column;
+            EOF = String.Length == Index;
+        }
 
+        public Position Advance()
+        {
             if (EOF) return this;
 
             var line = Line;
-            var column = Column;
-            var index = Index;
-            var eof = EOF;
+            var column = Column + 1;
+            var index = Index + 1;
 
-            for (int i = 1; i <= step; i++) {
-                if ((index + i) == String.Length) {
-                    //TODO  
+            if (index != String.Length) {
+                if (String[Index] == '\n') {
+                    line++;
+                    column = 1;
+                }
+                if (String[Index] == '\r' &&
+                    String[index] != '\n') {
+                    line++;
+                    column = 1;
                 }
             }
+            return new Position(String, index, line, column);
         }
     }
 }
