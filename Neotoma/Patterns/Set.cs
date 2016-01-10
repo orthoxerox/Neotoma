@@ -16,8 +16,8 @@ namespace Neotoma
 
         public Set(params char[] values) : base(false, null)
         {
-            Contract.Requires(values != null);
-            Contract.Requires(values.Length > 0);
+            Contract.Requires< ArgumentNullException>(values != null);
+            Contract.Requires<ArgumentException>(values.Length > 0);
             var set = new HashSet<char>(values);
             Values = set;
         }
@@ -28,8 +28,8 @@ namespace Neotoma
             string name = null)
             : base (memoized, name)
         {
-            Contract.Requires(values != null);
-            Contract.Requires(values.Count > 0);
+            Contract.Requires< ArgumentNullException>(values != null);
+            Contract.Requires<ArgumentException>(values.Count > 0);
             Values = values;
         }
 
@@ -57,25 +57,7 @@ namespace Neotoma
         {
             var chars = Values.Aggregate(
                 new System.Text.StringBuilder(),
-                (sb, c) =>
-                {
-                    switch (c) {
-                        case '-':
-                            return sb.Append("\\-");
-                        case '\r':
-                            return sb.Append("\\r");
-                        case '\n':
-                            return sb.Append("\\n");
-                        case '\t':
-                            return sb.Append("\\t");
-                        case '\v':
-                            return sb.Append("\\v");
-                        case '\\':
-                            return sb.Append("\\\\");
-                        default:
-                            return sb.Append(c);
-                    }
-                }
+                (sb, c) => sb.Append(c.ToRoundtripString())
                 ).ToString();
             return $"[{chars}]";
         }

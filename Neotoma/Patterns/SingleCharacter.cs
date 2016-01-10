@@ -36,7 +36,7 @@ namespace Neotoma
 
         protected override Pattern InternalMemoize(string name)
         {
-            return new SingleCharacter(Category, true);
+            return new SingleCharacter(Category, true, name);
         }
 
         public override string ToString()

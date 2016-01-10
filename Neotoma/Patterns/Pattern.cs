@@ -9,15 +9,9 @@ namespace Neotoma
 
     public abstract class Pattern
     {
-        public bool Memoized
-        {
-            get;
-        }
-
-        public string Name
-        {
-            get;
-        }
+        public bool Memoized { get; }
+        
+        public string Name { get; }
 
         internal Pattern(bool memoized, string name)
         {
@@ -35,20 +29,14 @@ namespace Neotoma
         }
 
         protected abstract Pattern InternalMemoize(string name);
-
         public ParsingResult Match(string input)
         {
-            return Match(
-                new Position(input),
-                new Memo());
+            return Match(new Position(input), new Memo());
         }
 
-        internal ParsingResult Match(
-            Position position,
-            IMemo memo)
+        internal ParsingResult Match(Position position, IMemo memo)
         {
             ParsingResult result;
-
             if (memo.TryGetValue(Tuple.Create(this, position), out result)) {
                 return result;
             }
@@ -56,11 +44,24 @@ namespace Neotoma
             return InternalMatch(position, memo);
         }
 
-        protected abstract ParsingResult InternalMatch(
-            Position position,
-            IDictionary<Tuple<Pattern, Position>, ParsingResult> memo);
-
+        protected abstract ParsingResult InternalMatch(Position position, IDictionary<Tuple<Pattern, Position>, ParsingResult> memo);
         public virtual string ToNestedString() => $"({ToString()})";
+
+        public Pattern this[int min, int max]
+        {
+            get
+            {
+                return new Repetition(this, min, max);
+            }
+        }
+
+        public Pattern this[int min]
+        {
+            get
+            {
+                return new Repetition(this, min, int.MaxValue);
+            }
+        }
 
         public static Pattern operator +(Pattern lhs, Pattern rhs)
         {
@@ -69,8 +70,8 @@ namespace Neotoma
 
             var llit = lhs as Literal;
             var rrit = rhs as Literal;
-            if (llit != null && rrit != null)
-            {
+
+            if (llit != null && rrit != null) {
                 return new Literal(llit.Value + rrit.Value);
             }
 
@@ -84,8 +85,8 @@ namespace Neotoma
 
             var lset = lhs as Set;
             var rset = rhs as Set;
-            if (lset != null && rset != null)
-            {
+
+            if (lset != null && rset != null) {
                 return new Set(lset.Values.Concat(rset.Values).ToArray());
             }
 
@@ -97,34 +98,6 @@ namespace Neotoma
         public static Repetition operator ~(Pattern rhs) => new Repetition(rhs, 0, 1);
         public static Repetition operator *(Pattern lhs, int rhs) => new Repetition(lhs, 1, rhs);
         public static Pattern operator &(Pattern lhs, Pattern rhs) => lhs + new Backtrack(rhs);
-    }
-
-    public abstract class SimplePattern : Pattern
-    {
-        internal SimplePattern(
-            bool memoized,
-            string name) 
-            : base(memoized, name)
-        { }
-
-        protected override sealed ParsingResult InternalMatch(
-            Position position,
-            IMemo memo)
-        {
-            if (position.EOF) {
-                return new ParsingError(
-                    "EOF reached",
-                    position,
-                    this);
-            } else {
-                return InternalInternalMatch(position, memo);
-            }
-        }
-
-        protected abstract ParsingResult InternalInternalMatch(
-            Position position, 
-            IMemo memo);
-
-        public override string ToNestedString() => ToString();
+        public static implicit operator Pattern(string rhs) => new Literal(rhs);
     }
 }

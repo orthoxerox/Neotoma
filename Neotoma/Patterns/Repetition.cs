@@ -8,20 +8,9 @@ namespace Neotoma
 
     public class Repetition : Pattern
     {
-        public Pattern Pattern
-        {
-            get;
-        }
-
-        public int Minimum
-        {
-            get;
-        }
-
-        public int Maximum
-        {
-            get;
-        }
+        public Pattern Pattern { get; }
+        public int Minimum { get; }
+        public int Maximum { get; }
 
         public Repetition(
             Pattern pattern, 
@@ -36,6 +25,8 @@ namespace Neotoma
             Contract.Requires(maximum >= minimum);
             Contract.Requires(!(pattern is Antipattern));
             Contract.Requires(!(pattern is Backtrack));
+
+            //TODO: repetition of repetition
 
             Pattern = pattern;
             Minimum = minimum;

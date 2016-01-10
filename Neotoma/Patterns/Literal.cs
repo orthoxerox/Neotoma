@@ -19,7 +19,7 @@ namespace Neotoma
             string name = null) 
             : base(memoized, name)
         {
-            Contract.Requires(!string.IsNullOrEmpty(value));
+            Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(value));
             Value = value;
         }
 
@@ -39,7 +39,7 @@ namespace Neotoma
                 var rec = pos.String[pos.Index];
                 if (exp != rec) {
                     return new ParsingError(
-                        $"Expected \"{Value}\", got {rec} instead of {exp}",
+                        $"Expected \"{Value}\", got '{rec}' instead of '{exp}'",
                         pos,
                         this);
                 }
@@ -50,12 +50,12 @@ namespace Neotoma
 
         protected override Pattern InternalMemoize(string name)
         {
-            return new Literal(Value, true);
+            return new Literal(Value, true, name);
         }
 
         public override string ToString()
         {
-            return "\"" + Value + "\"";
+            return Value.ToRoundtripString();
         }
     }
 }

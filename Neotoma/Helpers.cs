@@ -25,14 +25,5 @@ namespace Neotoma
         public static readonly Pattern Any = new AnySingleCharacter();
 
         public static readonly Pattern EOF = !Any;
-
-        public static readonly Pattern Lowercase
-            = new SingleCharacter(UnicodeCategory.LowercaseLetter);
-
-        public static readonly Pattern Uppercase
-            = new SingleCharacter(UnicodeCategory.UppercaseLetter);
-
-        public static readonly Pattern DecimalDigit
-            = new SingleCharacter(UnicodeCategory.DecimalDigitNumber);
     }
 }

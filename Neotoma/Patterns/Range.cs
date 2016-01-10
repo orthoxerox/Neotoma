@@ -25,7 +25,7 @@ namespace Neotoma
             string name = null) 
             : base (memoized, name)
         {
-            Contract.Requires(low <= high);
+            Contract.Requires<ArgumentException>(low <= high);
             Low = low;
             High = high;
         }
@@ -47,12 +47,12 @@ namespace Neotoma
 
         protected override Pattern InternalMemoize(string name)
         {
-            return new Range(Low, High, true);
+            return new Range(Low, High, true, name);
         }
 
         public override string ToString()
         {
-            return $"[{Low}-{High}]";
+            return $"[{Low.ToRoundtripString()}-{High.ToRoundtripString()}]";
         }
     }
 }
