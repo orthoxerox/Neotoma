@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Neotoma
 {
+    using System.Linq;
     using IMemo = IDictionary<Tuple<Pattern, Position>, ParsingResult>;
 
     public class Choice : Pattern
@@ -20,8 +21,8 @@ namespace Neotoma
             bool memoized = false,
             string name = null) : base(memoized, name)
         {
-            Contract.Requires(first != null);
-            Contract.Requires(second != null);
+            Contract.Requires<ArgumentNullException>(first != null);
+            Contract.Requires<ArgumentNullException>(second != null);
 
             var firstchoice = first as Choice;
             var secondchoice = second as Choice;
@@ -43,14 +44,38 @@ namespace Neotoma
             Patterns = patterns;
         }
 
+        public Choice(params Pattern[] patterns)
+            : this(patterns, false, null)
+        { }
+
         public Choice(
             IReadOnlyList<Pattern> patterns,
             bool memoized = false,
             string name = null)
             : base(memoized, name)
         {
-            Contract.Requires(patterns != null);
-            Contract.Requires(patterns.Count > 0);
+            Contract.Requires<ArgumentNullException>(patterns != null);
+            Contract.Requires<ArgumentException>(patterns.Count > 0);
+            Contract.Requires<ArgumentNullException>(patterns.All(p=>p!=null));
+            var ps = new List<Pattern>(patterns.Count);
+            foreach (var p in patterns) {
+                var c = p as Choice;
+                if (c != null) {
+                    ps.AddRange(c.Patterns);
+                } else {
+                    ps.Add(p);
+                }
+            }
+            Patterns = ps;
+        }
+
+        //Added to skip redundant checks
+        private Choice(
+            bool memoized,
+            string name,
+            IReadOnlyList<Pattern> patterns)
+            : base(memoized, name)
+        {
             Patterns = patterns;
         }
 
@@ -68,14 +93,14 @@ namespace Neotoma
             }
 
             return new ParsingError(
-                "Failed to match any choice",
+                "Failed to match any patern",
                 position,
                 this);
         }
 
         protected override Pattern InternalMemoize(string name)
         {
-            return new Choice(Patterns, true, name);
+            return new Choice(true, name, Patterns);
         }
 
         public override string ToString()

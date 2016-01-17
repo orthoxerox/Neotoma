@@ -57,6 +57,7 @@
     <Compile Include="ParsingErrorTests.cs" />
     <Compile Include="Patterns\BacktrackTests.cs" />
     <Compile Include="Patterns\AntipatternTests.cs" />
+    <Compile Include="Patterns\ChoiceTests.cs" />
     <Compile Include="Patterns\RangeTests.cs" />
     <Compile Include="Patterns\SetTests.cs" />
     <Compile Include="Patterns\SingleCharacterTests.cs" />
