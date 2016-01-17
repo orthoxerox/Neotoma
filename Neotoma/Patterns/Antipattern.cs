@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace Neotoma
 {
+    using System.Diagnostics.Contracts;
     using IMemo = IDictionary<Tuple<Pattern, Position>, ParsingResult>;
 
     public class Antipattern : Pattern
@@ -18,6 +19,7 @@ namespace Neotoma
             string name = null)
             : base (memoized, name)
         {
+            Contract.Requires<ArgumentNullException>(pattern != null);
             Pattern = pattern;
         }
 

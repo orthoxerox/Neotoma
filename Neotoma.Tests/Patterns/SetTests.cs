@@ -20,10 +20,10 @@ namespace Neotoma.Tests
             Assert.IsNull(s1.Name);
             Assert.IsFalse(s1.Memoized);
 
-            var r2 = new Set(new HashSet<char>() {'0', '9'}, true, "0-9");
+            var s2 = new Set(new HashSet<char>() {'0', '9'}, true, "0-9");
 
-            Assert.AreEqual("0-9", r2.Name);
-            Assert.IsTrue(r2.Memoized);
+            Assert.AreEqual("0-9", s2.Name);
+            Assert.IsTrue(s2.Memoized);
         }
 
         [TestMethod]

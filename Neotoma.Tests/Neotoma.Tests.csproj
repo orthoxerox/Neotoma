@@ -55,6 +55,7 @@
     <Compile Include="HelpersTests.cs" />
     <Compile Include="ParseNodeTests.cs" />
     <Compile Include="ParsingErrorTests.cs" />
+    <Compile Include="Patterns\BacktrackTests.cs" />
     <Compile Include="Patterns\AntipatternTests.cs" />
     <Compile Include="Patterns\RangeTests.cs" />
     <Compile Include="Patterns\SetTests.cs" />
