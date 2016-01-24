@@ -55,11 +55,11 @@ namespace Neotoma.Tests
             Assert.AreEqual(b, c5.Patterns[1]);
             Assert.AreEqual(c, c5.Patterns[2]);
 
-            var c6 = new Choice(c1, a);
+            var c6 = new Choice(c, c1);
 
-            Assert.AreEqual(a, c6.Patterns[0]);
-            Assert.AreEqual(b, c6.Patterns[1]);
-            Assert.AreEqual(a, c6.Patterns[2]);
+            Assert.AreEqual(c, c6.Patterns[0]);
+            Assert.AreEqual(a, c6.Patterns[1]);
+            Assert.AreEqual(b, c6.Patterns[2]);
 
             var c7 = new Choice(new Pattern[] { c1, c });
 
