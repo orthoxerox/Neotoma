@@ -24,7 +24,7 @@ namespace Neotoma.Tests
             Assert.IsNull(c1.Name);
             Assert.IsFalse(c1.Memoized);
 
-            var c2 = new Choice(a, b, true, "ch");
+            var c2 = new Choice(a, b, "ch");
 
             Assert.AreEqual("ch", c2.Name);
             Assert.IsTrue(c2.Memoized);
@@ -40,7 +40,7 @@ namespace Neotoma.Tests
             Assert.IsNull(c3.Name);
             Assert.IsFalse(c3.Memoized);
 
-            var c4 = new Choice(new[] { a, b, c }, true, "c4");
+            var c4 = new Choice(new[] { a, b, c }, "c4");
 
             Assert.AreEqual(a, c4.Patterns[0]);
             Assert.AreEqual(b, c4.Patterns[1]);
@@ -104,12 +104,6 @@ namespace Neotoma.Tests
         }
 
         [TestMethod]
-        public void New2()
-        {
-
-        }
-
-        [TestMethod]
         public void Match()
         {
             var a = new Literal("a");
@@ -149,7 +143,7 @@ namespace Neotoma.Tests
 
             Assert.IsNotNull(dot2);
             Assert.IsTrue(dot2.Memoized);
-            Assert.IsNull(dot2.Name);
+            Assert.AreEqual("", dot2.Name);
 
             var dot3 = dot2.Memoize();
             Assert.AreEqual(dot2, dot3);

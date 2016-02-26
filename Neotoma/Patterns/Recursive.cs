@@ -13,17 +13,15 @@ namespace Neotoma
         }
 
         public Recursive(
-            bool memoized = false,
             string name = null)
-            : base (memoized, name)
+            : base (name)
         {
         }
 
         internal Recursive(
             Pattern pattern,
-            bool memoized = false,
             string name = null)
-            : base(memoized, name)
+            : base(name)
         {
             Pattern = pattern;
         }
@@ -32,12 +30,12 @@ namespace Neotoma
             Position position, 
             IMemo memo)
         {
-            return Pattern.Match(position, memo) as ParseNode;
+            return Pattern.Match(position, memo);
         }
 
         protected override Pattern InternalMemoize(string name)
         {
-            return new Recursive(Pattern, true, name);
+            return new Recursive(Pattern, name);
         }
 
         public override string ToString()

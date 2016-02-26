@@ -15,9 +15,8 @@ namespace Neotoma
 
         public Backtrack(
             Pattern pattern, 
-            bool memoized = false,
             string name = null)
-            : base (memoized, name)
+            : base (name)
         {
             Contract.Requires<ArgumentNullException>(pattern != null);
             Pattern = pattern;
@@ -30,7 +29,7 @@ namespace Neotoma
             var result = Pattern.Match(position, memo) as ParseNode;
 
             if (result != null) {
-                return new ParseNode(position, position);
+                return new ParseNode(this, position, position);
             } else {
                 return new ParsingError(
                     $"Couldn't match pattern {Pattern}",
@@ -41,7 +40,7 @@ namespace Neotoma
 
         protected override Pattern InternalMemoize(string name)
         {
-            return new Backtrack(Pattern, true, name);
+            return new Backtrack(Pattern, name);
         }
 
         public override string ToString()

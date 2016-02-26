@@ -7,7 +7,7 @@ namespace Neotoma
 
     public abstract class SimplePattern : Pattern
     {
-        internal SimplePattern(bool memoized, string name) : base(memoized, name)
+        internal SimplePattern(string name) : base(name)
         {
         }
 

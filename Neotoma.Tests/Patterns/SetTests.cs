@@ -20,7 +20,7 @@ namespace Neotoma.Tests
             Assert.IsNull(s1.Name);
             Assert.IsFalse(s1.Memoized);
 
-            var s2 = new Set(new HashSet<char>() {'0', '9'}, true, "0-9");
+            var s2 = new Set(new HashSet<char>() {'0', '9'}, "0-9");
 
             Assert.AreEqual("0-9", s2.Name);
             Assert.IsTrue(s2.Memoized);
@@ -83,7 +83,7 @@ namespace Neotoma.Tests
 
             Assert.IsNotNull(dot2);
             Assert.IsTrue(dot2.Memoized);
-            Assert.IsNull(dot2.Name);
+            Assert.AreEqual("", dot2.Name);
 
             var dot3 = dot2.Memoize();
             Assert.AreEqual(dot2, dot3);

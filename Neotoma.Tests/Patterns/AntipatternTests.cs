@@ -23,7 +23,7 @@ namespace Neotoma.Tests
             Assert.IsNull(a1.Name);
             Assert.IsFalse(a1.Memoized);
 
-            var a2 = new Antipattern(dot, true, "ap");
+            var a2 = new Antipattern(dot, "ap");
 
             Assert.AreEqual("ap", a2.Name);
             Assert.IsTrue(a2.Memoized);
@@ -70,7 +70,7 @@ namespace Neotoma.Tests
 
             Assert.IsNotNull(dot2);
             Assert.IsTrue(dot2.Memoized);
-            Assert.IsNull(dot2.Name);
+            Assert.AreEqual("", dot2.Name);
 
             var dot3 = dot2.Memoize();
             Assert.AreEqual(dot2, dot3);

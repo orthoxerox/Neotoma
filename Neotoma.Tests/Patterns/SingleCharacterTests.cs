@@ -18,10 +18,9 @@ namespace Neotoma.Tests.Patterns
 
             var y = new SingleCharacter(
                 UnicodeCategory.DecimalDigitNumber, 
-                true, 
-                "DOT");
+                "0-9");
 
-            Assert.AreEqual("DOT", y.Name);
+            Assert.AreEqual("0-9", y.Name);
             Assert.IsTrue(y.Memoized);
         }
 
@@ -69,7 +68,7 @@ namespace Neotoma.Tests.Patterns
 
             Assert.IsNotNull(dot2);
             Assert.IsTrue(dot2.Memoized);
-            Assert.IsNull(dot2.Name);
+            Assert.AreEqual("", dot2.Name);
 
             var dot3 = dot2.Memoize();
             Assert.AreEqual(dot2, dot3);

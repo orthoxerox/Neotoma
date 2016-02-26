@@ -16,7 +16,7 @@ namespace Neotoma.Tests
         {
             var message = "foo";
             var position = new Position(message);
-            var pattern1 = new Literal("foo", true, "Hello");
+            var pattern1 = new Literal("foo", "Hello");
             var pattern2 = new Literal("foo");
 
             var err1 = new ParsingError(message, position, pattern1);

@@ -14,7 +14,7 @@ namespace Neotoma
             get;
         }
 
-        public Set(params char[] values) : base(false, null)
+        public Set(params char[] values) : base(null)
         {
             Contract.Requires< ArgumentNullException>(values != null);
             Contract.Requires<ArgumentException>(values.Length > 0);
@@ -24,9 +24,8 @@ namespace Neotoma
 
         public Set(
             ISet<char> values, 
-            bool memoized = true,
             string name = null)
-            : base (memoized, name)
+            : base (name)
         {
             Contract.Requires< ArgumentNullException>(values != null);
             Contract.Requires<ArgumentException>(values.Count > 0);
@@ -39,7 +38,7 @@ namespace Neotoma
         {
             var c = position.String[position.Index];
             if (Values.Contains(c)) {
-                return new ParseNode(position, position.Advance());
+                return new ParseNode(this, position, position.Advance());
             } else {
                 return new ParsingError(
                     $"Character '{c}' not in set {this}",
@@ -50,7 +49,7 @@ namespace Neotoma
 
         protected override Pattern InternalMemoize(string name)
         {
-            return new Set(Values, true, name);
+            return new Set(Values, name);
         }
 
         public override string ToString()

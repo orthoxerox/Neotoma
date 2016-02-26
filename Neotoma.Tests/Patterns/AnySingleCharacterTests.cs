@@ -14,7 +14,7 @@ namespace Neotoma.Tests.Patterns
             Assert.IsNull(dot1.Name);
             Assert.IsFalse(dot1.Memoized);
 
-            var dot2 = new AnySingleCharacter(true, "DOT");
+            var dot2 = new AnySingleCharacter("DOT");
 
             Assert.AreEqual("DOT", dot2.Name);
             Assert.IsTrue(dot2.Memoized);
@@ -54,7 +54,7 @@ namespace Neotoma.Tests.Patterns
 
             Assert.IsNotNull(dot2);
             Assert.IsTrue(dot2.Memoized);
-            Assert.IsNull(dot2.Name);
+            Assert.AreEqual("", dot2.Name);
 
             var dot3 = dot2.Memoize();
             Assert.AreEqual(dot2, dot3);

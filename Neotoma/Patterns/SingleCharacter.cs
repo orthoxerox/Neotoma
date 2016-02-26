@@ -4,6 +4,8 @@ using System.Globalization;
 
 namespace Neotoma
 {
+    using IMemo = IDictionary<Tuple<Pattern, Position>, ParsingResult>;
+
     public class SingleCharacter : SimplePattern
     {
         public UnicodeCategory Category
@@ -13,19 +15,18 @@ namespace Neotoma
 
         public SingleCharacter(
             UnicodeCategory category, 
-            bool memoized = false,
             string name = null) 
-            : base (memoized, name)
+            : base (name)
         {
             Category = category;
         }
 
-        protected override ParsingResult InternalInternalMatch(Position position, IDictionary<Tuple<Pattern, Position>, ParsingResult> memo)
+        protected override ParsingResult InternalInternalMatch(Position position, IMemo memo)
         {
             var c = position.String[position.Index];
             var cat = char.GetUnicodeCategory(c);
             if (cat == Category) {
-                return new ParseNode(position, position.Advance());
+                return new ParseNode(this, position, position.Advance());
             } else {
                 return new ParsingError(
                     $"Expected {Category}, got {cat}", 
@@ -36,7 +37,7 @@ namespace Neotoma
 
         protected override Pattern InternalMemoize(string name)
         {
-            return new SingleCharacter(Category, true, name);
+            return new SingleCharacter(Category, name);
         }
 
         public override string ToString()

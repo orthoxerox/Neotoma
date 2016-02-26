@@ -21,9 +21,8 @@ namespace Neotoma
         public Range(
             char low, 
             char high, 
-            bool memoized = false,
             string name = null) 
-            : base (memoized, name)
+            : base (name)
         {
             Contract.Requires<ArgumentException>(low <= high);
             Low = low;
@@ -36,7 +35,7 @@ namespace Neotoma
         {
             var c = position.String[position.Index];
             if (Low <= c && c <= High) {
-                return new ParseNode(position, position.Advance());
+                return new ParseNode(this, position, position.Advance());
             } else {
                 return new ParsingError(
                     $"Character '{c}' not in set {this}",
@@ -47,7 +46,7 @@ namespace Neotoma
 
         protected override Pattern InternalMemoize(string name)
         {
-            return new Range(Low, High, true, name);
+            return new Range(Low, High, name);
         }
 
         public override string ToString()

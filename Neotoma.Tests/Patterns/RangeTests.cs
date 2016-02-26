@@ -21,7 +21,7 @@ namespace Neotoma.Tests
             Assert.IsNull(r1.Name);
             Assert.IsFalse(r1.Memoized);
 
-            var r2 = new Range('0', '9', true, "0-9");
+            var r2 = new Range('0', '9', "0-9");
 
             Assert.AreEqual("0-9", r2.Name);
             Assert.IsTrue(r2.Memoized);
@@ -77,7 +77,7 @@ namespace Neotoma.Tests
 
             Assert.IsNotNull(dot2);
             Assert.IsTrue(dot2.Memoized);
-            Assert.IsNull(dot2.Name);
+            Assert.AreEqual("", dot2.Name);
 
             var dot3 = dot2.Memoize();
             Assert.AreEqual(dot2, dot3);

@@ -15,9 +15,8 @@ namespace Neotoma
 
         public Antipattern(
             Pattern pattern, 
-            bool memoized = false,
             string name = null)
-            : base (memoized, name)
+            : base (name)
         {
             Contract.Requires<ArgumentNullException>(pattern != null);
             Pattern = pattern;
@@ -35,13 +34,13 @@ namespace Neotoma
                     position,
                     this);
             } else {
-                return new ParseNode(position, position);
+                return new ParseNode(this, position, position);
             }
         }
 
         protected override Pattern InternalMemoize(string name)
         {
-            return new Antipattern(Pattern, true, name);
+            return new Antipattern(Pattern, name);
         }
 
         public override string ToString()

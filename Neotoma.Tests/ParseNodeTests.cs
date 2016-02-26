@@ -8,6 +8,8 @@ namespace Neotoma.Tests
     [TestClass]
     public class ParseNodeTests
     {
+        public static Pattern dot = new AnySingleCharacter();
+
         [TestMethod]
         public void NewLeaf()
         {
@@ -15,7 +17,7 @@ namespace Neotoma.Tests
             var pos = new Position(str);
             var nextPos = pos.Advance().Advance();
 
-            var node = new ParseNode(pos, nextPos);
+            var node = new ParseNode(dot, pos, nextPos);
 
             Assert.AreEqual(0, node.Children.Count);
             Assert.AreEqual(2, node.Length);
@@ -29,6 +31,7 @@ namespace Neotoma.Tests
         public void NewLeafException1()
         {
             var node = new ParseNode(
+                dot,
                 new Position("foo"), 
                 new Position("bar"));
         }
@@ -39,6 +42,7 @@ namespace Neotoma.Tests
         {
             var pos = new Position("foo");
             var node = new ParseNode(
+                dot,
                 pos.Advance(),
                 pos);
         }
@@ -51,10 +55,10 @@ namespace Neotoma.Tests
             var pos2 = pos1.Advance();
             var pos3 = pos2.Advance().Advance();
 
-            var ch1 = new ParseNode(pos1, pos2);
-            var ch2 = new ParseNode(pos2, pos3);
+            var ch1 = new ParseNode(dot, pos1, pos2);
+            var ch2 = new ParseNode(dot, pos2, pos3);
 
-            var node = new ParseNode(ch1, ch2);
+            var node = new ParseNode(dot, ch1, ch2);
 
             Assert.AreEqual(2, node.Children.Count);
             Assert.AreEqual(ch1, node.Children[0]);
@@ -73,10 +77,10 @@ namespace Neotoma.Tests
             var pos2 = pos1.Advance();
             var pos3 = pos2.Advance().Advance();
 
-            var ch1 = new ParseNode(pos1, pos2);
-            var ch2 = new ParseNode(pos2, pos3);
+            var ch1 = new ParseNode(dot, pos1, pos2);
+            var ch2 = new ParseNode(dot, pos2, pos3);
 
-            var node = new ParseNode(new List<ParseNode> { ch1, ch2 });
+            var node = new ParseNode(dot, new List<ParseNode> { ch1, ch2 });
 
             Assert.AreEqual(2, node.Children.Count);
             Assert.AreEqual(ch1, node.Children[0]);
@@ -91,14 +95,14 @@ namespace Neotoma.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void NewBranchException1()
         {
-            var node = new ParseNode((IReadOnlyList<ParseNode>)null);
+            var node = new ParseNode(dot, (IReadOnlyList<ParseNode>)null);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void NewBranchException2()
         {
-            var node = new ParseNode(new List<ParseNode>());
+            var node = new ParseNode(dot, new List<ParseNode>());
         }
     }
 }

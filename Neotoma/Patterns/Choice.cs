@@ -18,8 +18,7 @@ namespace Neotoma
         public Choice(
             Pattern first,
             Pattern second,
-            bool memoized = false,
-            string name = null) : base(memoized, name)
+            string name = null) : base(name)
         {
             Contract.Requires<ArgumentNullException>(first != null);
             Contract.Requires<ArgumentNullException>(second != null);
@@ -45,14 +44,13 @@ namespace Neotoma
         }
 
         public Choice(params Pattern[] patterns)
-            : this(patterns, false, null)
+            : this(patterns, null)
         { }
 
         public Choice(
             IReadOnlyList<Pattern> patterns,
-            bool memoized = false,
             string name = null)
-            : base(memoized, name)
+            : base(name)
         {
             Contract.Requires<ArgumentNullException>(patterns != null);
             Contract.Requires<ArgumentException>(patterns.Count > 0);
@@ -71,10 +69,9 @@ namespace Neotoma
 
         //Added to skip redundant checks
         private Choice(
-            bool memoized,
             string name,
             IReadOnlyList<Pattern> patterns)
-            : base(memoized, name)
+            : base(name)
         {
             Patterns = patterns;
         }
@@ -100,7 +97,7 @@ namespace Neotoma
 
         protected override Pattern InternalMemoize(string name)
         {
-            return new Choice(true, name, Patterns);
+            return new Choice(name, Patterns);
         }
 
         public override string ToString()

@@ -9,19 +9,20 @@ namespace Neotoma
 
     public abstract class Pattern
     {
-        public bool Memoized { get; }
+        public bool Memoized => Name != null;
+
+        public bool Named => !string.IsNullOrEmpty(Name);
         
         public string Name { get; }
 
-        internal Pattern(bool memoized, string name)
+        internal Pattern(string name)
         {
-            Memoized = memoized;
             Name = name;
         }
 
-        public Pattern Memoize(string name = null)
+        public Pattern Memoize(string name = "")
         {
-            if (Memoized && Name == name) {
+            if (Name == name) {
                 return this;
             }
 

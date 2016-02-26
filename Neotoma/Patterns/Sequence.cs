@@ -18,12 +18,11 @@ namespace Neotoma
         public Sequence(
             Pattern first, 
             Pattern second, 
-            bool memoized = false,
             string name = null) 
-            : base (memoized, name)
+            : base (name)
         {
-            Contract.Requires(first != null);
-            Contract.Requires(second != null);
+            Contract.Requires<ArgumentNullException>(first != null);
+            Contract.Requires<ArgumentNullException>(second != null);
             var firstseq = first as Sequence;
             var secondseq = second as Sequence;
             var count = firstseq?.Patterns.Count ?? 1 + secondseq?.Patterns.Count ?? 1;
@@ -51,12 +50,11 @@ namespace Neotoma
 
         public Sequence(
             IReadOnlyList<Pattern> patterns, 
-            bool memoized = false,
             string name = null) 
-            : base (memoized, name)
+            : base (name)
         {
-            Contract.Requires(patterns != null);
-            Contract.Requires(patterns.Count > 0);
+            Contract.Requires<ArgumentNullException>(patterns != null);
+            Contract.Requires<ArgumentException>(patterns.Count > 0);
             Patterns = patterns;
         }
 
@@ -74,32 +72,31 @@ namespace Neotoma
                 var node = result as ParseNode;
 
                 if (node != null) {
-                    if (lastNode != null
-                        && !pattern.Memoized
-                        && !lastPattern.Memoized) {
-                        lastNode = new ParseNode(
-                            lastNode.Position,
-                            node.NextPosition);
+                    if (node.Name != null) {
+                        nodes.Add(node);
                     } else {
-                        nodes.Add(lastNode);
-                        lastNode = node;
+                        //if there are no children, we add nothing at all
+                        nodes.AddRange(node.Children.Where(n => n.Name != null));
                     }
-                    lastPattern = pattern;
+                    pos = node.NextPosition;
                 } else {
                     return result; //TODO: nested errors
                 }
             }
-            nodes.Add(lastNode);
-            if (nodes.Count == 1) {
-                return nodes[0];
+            if (nodes.Count > 0) {
+                if (!Named && nodes.Count == 1) {
+                    return nodes[0];
+                } else {
+                    return new ParseNode(this, nodes);
+                }
             } else {
-                return new ParseNode(nodes);
+                return new ParseNode(this, position, pos);
             }
         }
 
         protected override Pattern InternalMemoize(string name)
         {
-            return new Sequence(Patterns, true);
+            return new Sequence(Patterns, name);
         }
 
         public override string ToString()

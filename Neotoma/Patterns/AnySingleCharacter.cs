@@ -8,9 +8,8 @@ namespace Neotoma
     public class AnySingleCharacter : SimplePattern
     {
         public AnySingleCharacter(
-            bool memoized = false,
             string name = null)
-            : base(memoized, name)
+            : base(name)
         {
         }
 
@@ -18,12 +17,12 @@ namespace Neotoma
             Position position, 
             IMemo memo)
         {
-            return new ParseNode(position, position.Advance());
+            return new ParseNode(this, position, position.Advance());
         }
 
         protected override Pattern InternalMemoize(string name)
         {
-            return new AnySingleCharacter(true, name);
+            return new AnySingleCharacter(name);
         }
 
         public override string ToString()

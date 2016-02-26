@@ -13,8 +13,10 @@ namespace Neotoma
         public Position NextPosition { get; }
         public int Length { get; }
         public string Value { get; }
+        public string Name { get; }
 
         public ParseNode(
+            Pattern pattern,
             Position startPosition, 
             Position nextPosition) 
             : base(startPosition)
@@ -28,18 +30,24 @@ namespace Neotoma
             Length = nextPosition.Index - startPosition.Index;
             NextPosition = nextPosition;
             Value = Position.String.Substring(Position.Index, Length);
+            Name = GetNodeNameFromPattern(pattern);
         }
 
-        public ParseNode(params ParseNode[] children) 
+        public ParseNode(
+            Pattern pattern,
+            params ParseNode[] children) 
             : base(children[0].Position)
         {
             Children = children;
             Length = Children.Sum(c => c.Length);
             NextPosition = children.Last().NextPosition;
             Value = default(string);
+            Name = GetNodeNameFromPattern(pattern);
         }
 
-        public ParseNode(IReadOnlyList<ParseNode> children) 
+        public ParseNode(
+            Pattern pattern,
+            IReadOnlyList<ParseNode> children) 
             : base(children?[0].Position ?? default(Position))
         {
             Contract.Requires<ArgumentNullException>(children != null);
@@ -49,6 +57,10 @@ namespace Neotoma
             Length = Children.Sum(c => c.Length);
             NextPosition = children.Last().NextPosition;
             Value = default(string);
+            Name = GetNodeNameFromPattern(pattern);
         }
+
+        private static string GetNodeNameFromPattern(Pattern pattern)
+            => pattern.Named ? pattern.Name : null;
     }
 }

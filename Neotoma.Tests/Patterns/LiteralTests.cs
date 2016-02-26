@@ -9,7 +9,7 @@ namespace Neotoma.Tests.Patterns
         [TestMethod]
         public void New()
         {
-            var lit = new Literal("foo", true, "Test");
+            var lit = new Literal("foo", "Test");
 
             Assert.AreEqual("foo", lit.Value);
             Assert.AreEqual("Test", lit.Name);
@@ -40,7 +40,7 @@ namespace Neotoma.Tests.Patterns
             Assert.IsNotNull(lit2);
             Assert.AreEqual(lit.Value, lit2.Value);
             Assert.IsTrue(lit2.Memoized);
-            Assert.IsNull(lit2.Name);
+            Assert.AreEqual("", lit2.Name);
 
             var lit3 = lit2.Memoize();
             Assert.AreEqual(lit2, lit3);

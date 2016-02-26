@@ -15,9 +15,8 @@ namespace Neotoma
 
         public Literal(
             string value, 
-            bool memoized = false,
             string name = null) 
-            : base(memoized, name)
+            : base(name)
         {
             Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(value));
             Value = value;
@@ -45,12 +44,12 @@ namespace Neotoma
                 }
                 pos = pos.Advance();
             }
-            return new ParseNode(position, pos);
+            return new ParseNode(this, position, pos);
         }
 
         protected override Pattern InternalMemoize(string name)
         {
-            return new Literal(Value, true, name);
+            return new Literal(Value, name);
         }
 
         public override string ToString()
