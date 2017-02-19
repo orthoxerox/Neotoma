@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Globalization;
 
-namespace Neotoma.Tests.Patterns
+namespace Neotoma.Tests
 {
     [TestClass]
     public class SingleCharacterTests

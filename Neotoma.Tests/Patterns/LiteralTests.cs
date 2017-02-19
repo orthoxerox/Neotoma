@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Neotoma.Tests.Patterns
+namespace Neotoma.Tests
 {
     [TestClass]
     public class LiteralTests
